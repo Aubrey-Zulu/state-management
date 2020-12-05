@@ -15,16 +15,17 @@ const useLocalStorage = (key, defaultValue) => {
 const Counter = ({ max, step }) => {
   const [count, setCount] = useLocalStorage('count', 0);
 
-  const updateDocumentTitle = () => {
-    document.title = count;
-  };
   const increment = () =>
     setCount((c) => {
       if (c >= max) return c;
       return c + step;
     });
 
-  const decrement = () => setCount(count - 1);
+  const decrement = () =>
+    setCount((c) => {
+      if (c <= 0) return c;
+      return c - step;
+    });
   const reset = () => setCount(0);
 
   return (

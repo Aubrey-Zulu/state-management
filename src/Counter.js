@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react';
 
-const getStateFromLocalStorage = () => {
-  const storage = localStorage.getItem('counterState');
-  if (storage) return JSON.parse(storage).count;
-  return 0;
+const useLocalStorage = (key, defaultValue) => {
+  const stored = localStorage.getItem(key);
+  const initial = stored ? JSON.parse(stored) : defaultValue;
+  const [value, setValue] = useState(initial);
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
 };
-const storeStateInLocalStorage = (count) => {
-  localStorage.setItem('counterState', JSON.stringify({ count }));
-};
+
 const Counter = ({ max, step }) => {
-  const [count, setCount] = useState(getStateFromLocalStorage());
+  const [count, setCount] = useLocalStorage('count', 0);
 
   const updateDocumentTitle = () => {
     document.title = count;
   };
-  const increment = () => setCount(count + 1);
+  const increment = () =>
+    setCount((c) => {
+      if (c >= max) return c;
+      return c + step;
+    });
+
   const decrement = () => setCount(count - 1);
   const reset = () => setCount(0);
-
-  useEffect(() => {
-    document.title = count;
-    console.log(count);
-  }, [count]);
-
-  useEffect(() => {
-    storeStateInLocalStorage(count);
-  }, [count]);
 
   return (
     <main className="Counter">
